@@ -154,13 +154,13 @@ public class RPGLambda implements RequestHandler<S3Event, Void> {
         }
 
         String publishDate_str = tags.get("publish_date");
-        String publish_month = publishDate_str.split("-")[0] + "_" + publishDate_str.split("-")[1];
+//        String publish_month = publishDate_str.split("-")[0] + "_" + publishDate_str.split("-")[1];
 //        nameToBe = publishDate_str + "_" + nameToBe.replaceAll(" ", "-")
 //                + "_" + voiceId
-        String nameToBe = tags.get("name_prefix") + publishDate_str.replaceAll("-", "");
-        if (count > 0) {
-            nameToBe += "-" + count;
-        }
+//        String nameToBe = tags.get("name_prefix") + publishDate_str.replaceAll("-", "");
+//        if (count > 0) {
+//            nameToBe += "-" + count;
+//        }
         ;
 
         String bucketName = tags.get("output_bucket");
@@ -172,7 +172,8 @@ public class RPGLambda implements RequestHandler<S3Event, Void> {
         String[] pathInfo = outputUri.split("/");
         String objectName = pathInfo[pathInfo.length - 1];
 
-        String destination_key = prefix + publish_month + "/" + nameToBe + "." + objectType;
+//        String destination_key = prefix + publish_month + "/" + nameToBe + "." + objectType;
+        String destination_key = tags.get("audio_key");
         CopyObjectRequest copyObjRequest = new CopyObjectRequest(bucketName,
                 prefix + objectName,
                 bucketName,
