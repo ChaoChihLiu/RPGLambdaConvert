@@ -14,7 +14,6 @@ import com.amazonaws.services.polly.model.TaskStatus;
 import com.amazonaws.services.polly.model.TextType;
 import com.amazonaws.services.polly.model.VoiceId;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
@@ -31,7 +30,6 @@ import com.amazonaws.services.s3.model.VersionListing;
 import com.amazonaws.util.IOUtils;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -128,8 +126,14 @@ public class RPGLambda implements RequestHandler<S3Event, Void> {
     }
 
     private StartSpeechSynthesisTaskResult startPolly(String content, Map<String, String> tags) throws IOException {
+
+        String engine = "neural";
+        if( tags.containsKey("engine") ){
+            engine = tags.get("engine");
+        }
+
         StartSpeechSynthesisTaskRequest speechRequest = new StartSpeechSynthesisTaskRequest()
-                .withOutputFormat(OutputFormat.fromValue(System.getenv("output_format")))
+                .withOutputFormat(OutputFormat.fromValue(tags.get("output_format")))
                 .withText(content)
                 .withTextType(TextType.Ssml)
 //                .withOutputS3BucketName("cpbpc-rpg-audio")
@@ -138,7 +142,7 @@ public class RPGLambda implements RequestHandler<S3Event, Void> {
                 .withOutputS3KeyPrefix(tags.get("output_prefix"))
 //                    .withSnsTopicArn(SNS_TOPIC_ARN)
                 .withVoiceId(VoiceId.fromValue(tags.get("voice_id")))
-                .withEngine("neural");
+                .withEngine(engine);
 
         StartSpeechSynthesisTaskResult result = AMAZON_POLLY_CLIENT.startSpeechSynthesisTask(speechRequest);
         System.out.println("file url : " + result.getSynthesisTask().getOutputUri());
