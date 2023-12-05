@@ -30,6 +30,7 @@ import com.amazonaws.services.s3.model.VersionListing;
 import com.amazonaws.util.IOUtils;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,8 +46,10 @@ public class RPGLambda implements RequestHandler<S3Event, Void> {
     public Void handleRequest(S3Event s3event, Context context) {
 //        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
         for (S3Event.S3EventNotificationRecord record : s3event.getRecords()) {
-            String bucketName = record.getS3().getBucket().getName();
-            String objectKey = record.getS3().getObject().getKey();
+            String bucketName = URLDecoder.decode(record.getS3().getBucket().getName());
+            String objectKey = URLDecoder.decode(record.getS3().getObject().getKey());
+            System.out.println("bucket name: " + bucketName);
+            System.out.println("object key: " + objectKey);
             S3Object s3Object = s3Client.getObject(bucketName, objectKey);
             S3ObjectInputStream inputStream = s3Object.getObjectContent();
 
