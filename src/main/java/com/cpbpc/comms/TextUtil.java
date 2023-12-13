@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class TextUtil {
 
     public static String returnChapterWord(String book){
-        if( AppProperties.isChinese() ){
+        if( ZhConverterUtil.containsChinese(book) ){
             if( StringUtils.equals(book, "詩篇")
                     || StringUtils.equals(book, "詩")
                     || StringUtils.equals(book, ZhConverterUtil.toSimple("詩篇"))
@@ -19,7 +19,7 @@ public class TextUtil {
             }
             return "章";
         }
-        if( AppProperties.isEnglish() ){
+        if( !ZhConverterUtil.containsChinese(book) ){
             if( StringUtils.equalsIgnoreCase(book, "psalm") || StringUtils.equalsIgnoreCase(book, "psalms") ){
                 return "";
             }

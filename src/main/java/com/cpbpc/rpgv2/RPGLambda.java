@@ -19,6 +19,7 @@ import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GetObjectTaggingRequest;
 import com.amazonaws.services.s3.model.GetObjectTaggingResult;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.ObjectTagging;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -182,9 +183,12 @@ public class RPGLambda implements RequestHandler<S3Event, Void> {
 //        String destination_key = prefix + publish_month + "/" + nameToBe + "." + objectType;
         String destination_key = tags.get("audio_key");
         CopyObjectRequest copyObjRequest = new CopyObjectRequest(bucketName,
-                prefix + objectName,
-                bucketName,
-                destination_key);
+                                                        prefix + objectName,
+                                                                bucketName,
+                                                                destination_key);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.addUserMetadata("needPL", "true");
+        copyObjRequest.setNewObjectMetadata(metadata);
 
         List<Tag> destTags = new ArrayList<>();
         destTags.add(new Tag("publish_date", publishDate_str));

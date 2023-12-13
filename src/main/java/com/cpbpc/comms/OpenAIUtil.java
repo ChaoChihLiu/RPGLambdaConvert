@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 public class OpenAIUtil {
 
     private static String createThread() throws IOException {
-        String apiKey = SecretUtil.getOPENAPIKey();
+        String apiKey = System.getenv("openai_api_key");
         String apiUrl = "https://api.openai.com/v1/threads";
         URL url = new URL(apiUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -87,7 +87,7 @@ public class OpenAIUtil {
     }
 
     private static String createCompletions(String prompt) throws IOException {
-        String apiKey = SecretUtil.getOPENAPIKey();
+        String apiKey = System.getenv("openai_api_key");
         String apiUrl = "https://api.openai.com/v1/completions";
 //        String apiUrl = "https://api.openai.com/v1/chat/completions";
 //        String apiUrl = "https://api.openai.com/v1/threads/"+createThread()+"/messages";
@@ -183,9 +183,9 @@ public class OpenAIUtil {
 
     public static String speechToText(String filePath, String language) {
         try {
-            // Replace 'YOUR_API_KEY' with your OpenAI API key
-            String apiKey = SecretUtil.getOPENAPIKey();
-            String apiUrl = "https://api.openai.com/v1/audio/transcriptions";
+            String apiKey = System.getenv("openai_api_key");
+//            String apiUrl = "https://api.openai.com/v1/audio/transcriptions";
+            String apiUrl = System.getenv("openai_audio_transcription_url");
 
             final HttpPost httppost = new HttpPost(apiUrl);
             httppost.addHeader("Authorization", "Bearer "+apiKey);
@@ -240,8 +240,7 @@ public class OpenAIUtil {
 
     public static void textToSpeech(String text, String voice) throws ProtocolException {
         try {
-            // Replace 'YOUR_API_KEY' with your OpenAI API key
-            String apiKey = SecretUtil.getOPENAPIKey();
+            String apiKey = System.getenv("openai_api_key");
             String apiUrl = "https://api.openai.com/v1/audio/speech";
 
 
