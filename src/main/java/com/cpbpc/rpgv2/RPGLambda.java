@@ -186,6 +186,7 @@ public class RPGLambda implements RequestHandler<S3Event, Void> {
                                                                 bucketName,
                                                                 destination_key);
 //        ObjectMetadata metadata = new ObjectMetadata();
+//        metadata.addUserMetadata("Content-Type", "audio/mpeg");
 //        metadata.addUserMetadata("needPL", "true");
 //        copyObjRequest.setNewObjectMetadata(metadata);
 

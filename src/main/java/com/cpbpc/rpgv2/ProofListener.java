@@ -53,19 +53,6 @@ public class ProofListener implements RequestHandler<S3Event, Void> {
             System.out.println("bucket name: " + bucketName);
             System.out.println("object key: " + objectKey);
 
-            ObjectMetadata metadata = s3Client.getObjectMetadata(bucketName, objectKey);
-            if( !metadata.getUserMetadata().containsKey("needPL")
-                    || !StringUtils.equalsIgnoreCase(metadata.getUserMetadata().get("needPL"), "true") ){
-                System.out.println(objectKey + " is not target, skip");
-                return null;
-            }
-
-//            Matcher matcher = object_key_pattern.matcher(objectKey);
-//            if( !matcher.find() ){
-//                System.out.println(objectKey + " is not target, skip");
-//                return null;
-//            }
-
             GetObjectTaggingRequest getObjectTaggingRequest = new GetObjectTaggingRequest(bucketName, objectKey);
             GetObjectTaggingResult getObjectTaggingResponse = s3Client.getObjectTagging(getObjectTaggingRequest);
 
@@ -76,21 +63,19 @@ public class ProofListener implements RequestHandler<S3Event, Void> {
             if( tags.isEmpty() ){
                 continue;
             }
-            if( !tags.containsKey("pl_script") || StringUtils.isEmpty(tags.get("pl_script")) ){
-                continue;
-            }
-            String pl_script = URLDecoder.decode(tags.get("pl_script"));
-            String pl_script_bucket = URLDecoder.decode(tags.get("pl_script_bucket"));
+
+            String audio_key = URLDecoder.decode(tags.get("audio_key"));
+            String audio_bucket = URLDecoder.decode(tags.get("output_bucket"));
 
             //load audio first
-            String audioFilePath = downloadS3Object( bucketName, objectKey );
+            String audioFilePath = downloadS3Object( audio_bucket, audio_key );
             File audio = new File(audioFilePath);
             if( !audio.exists() ){
                 System.out.println("audio file not exist");
                 return null;
             }
             //load pl script
-            String plFilePath = downloadS3Object( pl_script_bucket, pl_script );
+            String plFilePath = downloadS3Object( bucketName, objectKey );
             File plfile = new File(plFilePath);
             if( !plfile.exists() ){
                 System.out.println("pl file not exist");
@@ -139,7 +124,7 @@ public class ProofListener implements RequestHandler<S3Event, Void> {
                 buffer.append(System.lineSeparator());
             }
 
-            saveToS3(buffer.toString(), bucketName, pl_script.replace("pl", "txt"));
+            saveToS3(buffer.toString(), bucketName, audio_key.replace(tags.get("output_format"), "txt"));
         }
 
         return null;

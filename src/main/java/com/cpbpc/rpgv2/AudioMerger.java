@@ -7,7 +7,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectTaggingRequest;
 import com.amazonaws.services.s3.model.GetObjectTaggingResult;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.Tag;
 import com.cpbpc.comms.AWSUtil;
@@ -52,7 +51,7 @@ public class AudioMerger implements RequestHandler<S3Event, Void> {
                 if (tags.isEmpty()) {
                     continue;
                 }
-                if (!verifyTags(List.of("pl_script_bucket", "pl_script", "audio_merged_prefix", "audio_merged_bucket", "audio_merged_format"), tags)) {
+                if (!verifyTags(List.of("audio_merged_prefix", "audio_merged_bucket", "audio_merged_format"), tags)) {
                     continue;
                 }
 
@@ -64,12 +63,12 @@ public class AudioMerger implements RequestHandler<S3Event, Void> {
                 for( String input : list ){
                     File audio = mergeMp3(input, tags);
                     List<Tag> tagList = new ArrayList<>();
-                    tagList.add(new Tag("pl_script_bucket", tags.get("pl_script_bucket")));
-                    tagList.add(new Tag("pl_script", tags.get("pl_script")));
-
-                    ObjectMetadata metadata = new ObjectMetadata();
-                    metadata.addUserMetadata("needPL", "true");
-                    AWSUtil.uploadS3Object(tags.get("audio_merged_bucket"), tags.get("audio_merged_prefix"), audio.getName(), audio, tagList, metadata);
+//                    tagList.add(new Tag("pl_script_bucket", tags.get("pl_script_bucket")));
+//                    tagList.add(new Tag("pl_script", tags.get("pl_script")));
+//
+//                    ObjectMetadata metadata = new ObjectMetadata();
+//                    metadata.addUserMetadata("needPL", "true");
+                    AWSUtil.uploadS3Object(tags.get("audio_merged_bucket"), tags.get("audio_merged_prefix"), audio.getName(), audio, tagList);
                 }//end of for loop
 
                 s3Client.deleteObject(bucketName, objectKey);
