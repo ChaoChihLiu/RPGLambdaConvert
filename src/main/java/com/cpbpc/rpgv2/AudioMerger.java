@@ -71,7 +71,7 @@ public class AudioMerger implements RequestHandler<S3Event, Void> {
                     AWSUtil.uploadS3Object(tags.get("audio_merged_bucket"), tags.get("audio_merged_prefix"), audio.getName(), audio, tagList);
                 }//end of for loop
 
-                s3Client.deleteObject(bucketName, objectKey);
+//                s3Client.deleteObject(bucketName, objectKey);
             }
 
         }catch(IOException e){
