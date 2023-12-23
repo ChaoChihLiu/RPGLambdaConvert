@@ -115,7 +115,7 @@ public class AudioMerger implements RequestHandler<S3Event, Void> {
             list.addAll(List.of(book_directory.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
-                    if( StringUtils.endsWith(name, "mp3") ){
+                    if( StringUtils.endsWith(name, tags.get("output_format")) ){
                         return true;
                     }
                     return false;

@@ -107,6 +107,7 @@ public class ProofListener implements RequestHandler<S3Event, Void> {
                                             removeHtmlTag(script, ""))))));
             StringBuffer buffer = new StringBuffer();
             buffer.append("original: " + script).append(System.lineSeparator());
+            buffer.append(System.lineSeparator());
             buffer.append("from AI : " + fromAI).append(System.lineSeparator());
             buffer.append(System.lineSeparator());
 
@@ -124,7 +125,7 @@ public class ProofListener implements RequestHandler<S3Event, Void> {
                 buffer.append(System.lineSeparator());
             }
 
-            saveToS3(buffer.toString(), bucketName, audio_key.replace(tags.get("output_format"), "txt"));
+            saveToS3(buffer.toString(), bucketName, objectKey.replace("pl", "txt"));
         }
 
         return null;
