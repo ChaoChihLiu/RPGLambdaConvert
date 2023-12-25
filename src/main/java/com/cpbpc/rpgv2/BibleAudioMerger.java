@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AudioMerger implements RequestHandler<S3Event, Void> {
+public class BibleAudioMerger implements RequestHandler<S3Event, Void> {
 
     private static final AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
     
@@ -55,6 +55,9 @@ public class AudioMerger implements RequestHandler<S3Event, Void> {
                     continue;
                 }
 
+                String audioFileName = StringUtils.split(objectKey.split("/")[1], ".")[0]+"."+tags.get("audio_merged_format");
+                System.out.println("audio file name " + audioFileName);
+
                 S3Object s3Object = s3Client.getObject(bucketName, objectKey);
                 String content = IOUtils.toString(s3Object.getObjectContent());
 
@@ -68,7 +71,7 @@ public class AudioMerger implements RequestHandler<S3Event, Void> {
 //
 //                    ObjectMetadata metadata = new ObjectMetadata();
 //                    metadata.addUserMetadata("needPL", "true");
-                    AWSUtil.uploadS3Object(tags.get("audio_merged_bucket"), tags.get("audio_merged_prefix"), audio.getName(), audio, tagList);
+                    AWSUtil.uploadS3Object(tags.get("audio_merged_bucket"), tags.get("audio_merged_prefix"), audioFileName, audio, tagList);
                 }//end of for loop
 
 //                s3Client.deleteObject(bucketName, objectKey);

@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AudioMergerV2 implements RequestHandler<S3Event, Void> {
+public class RPGAudioMerger implements RequestHandler<S3Event, Void> {
 
     private static final AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
     
