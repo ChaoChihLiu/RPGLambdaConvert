@@ -7,8 +7,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectTaggingRequest;
 import com.amazonaws.services.s3.model.GetObjectTaggingResult;
+import com.amazonaws.services.s3.model.ObjectTagging;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3VersionSummary;
+import com.amazonaws.services.s3.model.SetObjectTaggingRequest;
 import com.amazonaws.services.s3.model.Tag;
+import com.amazonaws.services.s3.model.VersionListing;
 import com.cpbpc.comms.AWSUtil;
 import com.cpbpc.comms.PunctuationTool;
 import com.cpbpc.comms.TextUtil;
@@ -48,8 +52,8 @@ public class BibleAudioMerger implements RequestHandler<S3Event, Void> {
                 getObjectTaggingResponse.getTagSet().forEach(tag -> {
                     tags.put(tag.getKey(), tag.getValue());
                 });
-                if (tags.isEmpty()) {
-                    continue;
+                if( tags.isEmpty() ){
+                    tags.putAll(copyFromPreviousVersion( getObjectTaggingResponse, bucketName, objectKey ));
                 }
                 if (!verifyTags(List.of("audio_merged_prefix", "audio_merged_bucket", "audio_merged_format"), tags)) {
                     continue;
@@ -82,6 +86,34 @@ public class BibleAudioMerger implements RequestHandler<S3Event, Void> {
         }
 
         return null;
+    }
+
+    private Map<String, String> copyFromPreviousVersion(GetObjectTaggingResult currentVersion, String bucketName, String objectKey) {
+        Map<String, String> tags = new HashMap<>();
+        String versionId = currentVersion.getVersionId();
+
+        VersionListing list = s3Client.listVersions(bucketName, objectKey);
+        List<S3VersionSummary> summaries = list.getVersionSummaries();
+        for( S3VersionSummary summary : summaries ){
+            if( summary.getVersionId().equals(versionId) ){
+                continue;
+            }
+            GetObjectTaggingRequest getObjectTaggingRequest = new GetObjectTaggingRequest(bucketName, objectKey, summary.getVersionId());
+            GetObjectTaggingResult getObjectTaggingResponse = s3Client.getObjectTagging(getObjectTaggingRequest);
+            if( getObjectTaggingResponse.getTagSet().isEmpty() ){
+                continue;
+            }
+            getObjectTaggingResponse.getTagSet().forEach(tag -> {
+                tags.put(tag.getKey(), tag.getValue());
+            });
+
+            ObjectTagging tagging = new ObjectTagging(getObjectTaggingResponse.getTagSet());
+            SetObjectTaggingRequest setObjectTaggingRequest = new SetObjectTaggingRequest(bucketName, objectKey, versionId, tagging);
+            s3Client.setObjectTagging(setObjectTaggingRequest);
+            break;
+        }
+
+        return tags;
     }
 
     public static File mergeMp3(String verse, Map<String, String> tags) {
