@@ -103,18 +103,19 @@ public class AudioMerger implements RequestHandler<S3Event, Void> {
         String date = tags.get("publish_date");
         String publishMonth = date.split(" ")[0];
         String publishDate = date.split(" ")[1];
+        String timing = tags.get("timing");
 
-        File rpg_directory = new File( local_audio_directory.getAbsolutePath()+"/"+tags.get("output_prefix")+publishMonth+"/"+publishDate+"/" );
-        if( !rpg_directory.exists() ){
-            rpg_directory.mkdirs();
+        File directory = new File( local_audio_directory.getAbsolutePath()+"/"+tags.get("output_prefix")+publishMonth+"/"+publishDate+"/" + timing + "/" );
+        if( !directory.exists() ){
+            directory.mkdirs();
         }
         AWSUtil.copyS3Objects( tags.get("output_bucket"),
-                tags.get("output_prefix")+publishMonth+"/"+publishDate+"/",
+                tags.get("output_prefix")+publishMonth+"/"+publishDate+"/" + timing + "/",
                 tags.get("output_format"),
                 local_audio_directory.getAbsolutePath()+"/");
 
         List<File> toBeMerged = new ArrayList<>();
-        toBeMerged.addAll(List.of(rpg_directory.listFiles(new FilenameFilter() {
+        toBeMerged.addAll(List.of(directory.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 if( StringUtils.endsWith(name, tags.get("output_format")) ){
@@ -140,7 +141,8 @@ public class AudioMerger implements RequestHandler<S3Event, Void> {
 
 
 
-        String finalName = tags.get("name_prefix")+StringUtils.remove(date, " ")+"."+tags.get("audio_merged_format");
+//        String finalName = tags.get("name_prefix")+StringUtils.remove(date, " ")+"."+tags.get("audio_merged_format");
+        String finalName = tags.get("audio_key").split("/")[2];
         return mergeTo( toBeMerged, local_audio_directory.getAbsolutePath(), finalName );
     }
 
