@@ -51,6 +51,7 @@ public class AudioMerger implements RequestHandler<S3Event, Void> {
                 tags.putAll(copyFromPreviousVersion( getObjectTaggingResponse, bucketName, objectKey ));
             }
             if (!verifyTags(List.of("audio_merged_prefix", "audio_merged_bucket", "audio_merged_format"), tags)) {
+                System.out.println("audio_merged_prefix, audio_merged_bucket, audio_merged_format are required");
                 continue;
             }
             
@@ -103,7 +104,7 @@ public class AudioMerger implements RequestHandler<S3Event, Void> {
         String date = tags.get("publish_date");
         String publishMonth = date.split(" ")[0];
         String publishDate = date.split(" ")[1];
-        String timing = tags.get("timing");
+        String timing = StringUtils.lowerCase(tags.get("timing"));
 
         File directory = new File( local_audio_directory.getAbsolutePath()+"/"+tags.get("output_prefix")+publishMonth+"/"+publishDate+"/" + timing + "/" );
         if( !directory.exists() ){
