@@ -21,6 +21,29 @@ import java.util.List;
 public class AWSUtil {
 
     private static final AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
+
+    public static String searchS3ObjectKey(String bucketName, String prefix, String searchKey){
+
+        // Create a request to list objects in the bucket
+        ListObjectsV2Request request = new ListObjectsV2Request()
+                .withBucketName(bucketName)
+                .withPrefix(prefix);
+
+        // List objects in the bucket
+        ListObjectsV2Result result = s3Client.listObjectsV2(request);
+
+        // Iterate over the object summaries and search for the term
+        for (S3ObjectSummary summary : result.getObjectSummaries()) {
+            // Check if the object key contains the search term
+            if (summary.getKey().contains(searchKey)) {
+                // Object key contains the search term, do something with it
+                System.out.println("Found matching object: " + summary.getKey());
+                return summary.getKey();
+            }
+        }
+
+        return "";
+    }
     
     public static void copyS3Objects(String bucketName, String outputPrefix, String outputFormat, String local_destination) {
 

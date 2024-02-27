@@ -210,8 +210,12 @@ public class CRPGLambda implements RequestHandler<S3Event, Void> {
         destTags.add(new Tag("voice_id", tags.get("voice_id")));
         destTags.add(new Tag("category", tags.get("category")));
         destTags.add(new Tag("engine", tags.get("engine")));
-        destTags.add(new Tag("pl_script", tags.get("pl_script")));
-        destTags.add(new Tag("pl_script_bucket", tags.get("pl_script_bucket")));
+        if( tags.containsKey("pl_script") && null != tags.get("pl_script") ){
+            destTags.add(new Tag("pl_script", tags.get("pl_script")));
+        }
+        if( tags.containsKey("pl_script_bucket") && null != tags.get("pl_script_bucket") ){
+            destTags.add(new Tag("pl_script_bucket", tags.get("pl_script_bucket")));
+        }
 
         copyObjRequest.setStorageClass(StorageClass.IntelligentTiering);
         copyObjRequest.setNewObjectTagging(new ObjectTagging(destTags));

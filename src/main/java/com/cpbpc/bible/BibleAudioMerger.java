@@ -1,4 +1,4 @@
-package com.cpbpc.rpgv2;
+package com.cpbpc.bible;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
