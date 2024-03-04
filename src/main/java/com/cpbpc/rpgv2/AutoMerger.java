@@ -44,16 +44,15 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
             String bucketName = URLDecoder.decode(record.getS3().getBucket().getName());
             String objectKey = URLDecoder.decode(record.getS3().getObject().getKey());
 
+            System.out.println("bucket name: " + bucketName);
+            System.out.println("object key: " + objectKey);
+
             Matcher matcher = prefix_pattern.matcher(objectKey);
             if( !matcher.find() ){
                  continue;
             }
-
-            System.out.println("bucket name: " + bucketName);
-            System.out.println("object key: " + objectKey);
-
+            
             String audio_merge_bucket = System.getenv("audio_merge_bucket");
-            String test = StringUtils.substring(objectKey, 0, StringUtils.lastIndexOf(objectKey, "/"));
             String audio_merge_object_key = AWSUtil.searchS3ObjectKey(audio_merge_bucket, StringUtils.substring(objectKey, 0, StringUtils.lastIndexOf(objectKey, "/")), "audioMerge") ;
 
             GetObjectTaggingRequest getObjectTaggingRequest = new GetObjectTaggingRequest(audio_merge_bucket, audio_merge_object_key);
@@ -64,7 +63,7 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
                 tags.put(tag.getKey(), tag.getValue());
             });
             if( tags.isEmpty() ){
-                tags.putAll(copyFromPreviousVersion( getObjectTaggingResponse, bucketName, objectKey ));
+                tags.putAll(copyFromPreviousVersion( getObjectTaggingResponse, audio_merge_bucket, audio_merge_object_key ));
             }
             if (!verifyTags(List.of("audio_merged_prefix", "audio_merged_bucket", "audio_merged_format"), tags)) {
                 continue;

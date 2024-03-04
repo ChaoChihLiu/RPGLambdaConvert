@@ -13,16 +13,62 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.StorageClass;
 import com.amazonaws.services.s3.model.Tag;
 import com.amazonaws.util.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class AWSUtil {
 
     private static final AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
 
-    public static String searchS3ObjectKey(String bucketName, String prefix, String searchKey){
+    public static String searchS3ObjectKey(String bucketName, String prefix, String objectKeyPartial, String contentKeyword) throws IOException {
+        System.out.println("bucket name: " + bucketName);
+        System.out.println("prefix: " + prefix);
+        System.out.println("objectKeyPartial: " + objectKeyPartial);
+        System.out.println("contentKeyword: " + contentKeyword);
+
+        // Create a request to list objects in the bucket
+        ListObjectsV2Request request = new ListObjectsV2Request()
+                .withBucketName(bucketName)
+                .withPrefix(prefix);
+
+        // List objects in the bucket
+        ListObjectsV2Result result = s3Client.listObjectsV2(request);
+        String local_parent = "/tmp/audioMerge/";
+        
+        for (S3ObjectSummary summary : result.getObjectSummaries()) {
+            String objectKey = summary.getKey();
+            if( !org.apache.commons.lang3.StringUtils.contains(objectKey, objectKeyPartial) ){
+                continue;
+            }
+
+            String local_file_path = local_parent+summary.getKey();
+            File local_parent_folder = new File(StringUtils.substring(local_file_path, 0, StringUtils.lastIndexOf(local_file_path, "/")));
+//            System.out.println( "local_parent_folder: " + local_parent_folder.getAbsolutePath() );
+            if( !local_parent_folder.exists() ){
+                local_parent_folder.mkdirs();
+            }
+            downloadS3Object(summary.getBucketName(), summary.getKey(), local_file_path);
+            String content = IOUtils.toString( new FileInputStream(new File(local_file_path)));
+            if( !StringUtils.endsWith(content, ",") ){
+                content = content + ",";
+            }
+            System.out.println("content: " + content);
+            System.out.println(" StringUtils.contains(content, contentKeyword): " + StringUtils.contains(content, contentKeyword));
+            if(StringUtils.contains(content, contentKeyword) ){
+                System.out.println("Found matching object: " + objectKey);
+                return objectKey;
+            }
+        }
+
+        return "";
+    }
+
+    public static String searchS3ObjectKey(String bucketName, String prefix, String objectKeyPartial){
 
         // Create a request to list objects in the bucket
         ListObjectsV2Request request = new ListObjectsV2Request()
@@ -35,7 +81,7 @@ public class AWSUtil {
         // Iterate over the object summaries and search for the term
         for (S3ObjectSummary summary : result.getObjectSummaries()) {
             // Check if the object key contains the search term
-            if (summary.getKey().contains(searchKey)) {
+            if (summary.getKey().contains(objectKeyPartial)) {
                 // Object key contains the search term, do something with it
                 System.out.println("Found matching object: " + summary.getKey());
                 return summary.getKey();
