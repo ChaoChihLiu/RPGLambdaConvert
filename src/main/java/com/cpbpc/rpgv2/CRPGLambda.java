@@ -12,11 +12,8 @@ import com.amazonaws.services.s3.model.GetObjectTaggingResult;
 import com.amazonaws.services.s3.model.ObjectTagging;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.amazonaws.services.s3.model.S3VersionSummary;
-import com.amazonaws.services.s3.model.SetObjectTaggingRequest;
 import com.amazonaws.services.s3.model.StorageClass;
 import com.amazonaws.services.s3.model.Tag;
-import com.amazonaws.services.s3.model.VersionListing;
 import com.amazonaws.util.IOUtils;
 import com.cpbpc.comms.AWSUtil;
 
@@ -34,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.cpbpc.comms.AWSUtil.copyFromPreviousVersion;
 
 
 public class CRPGLambda implements RequestHandler<S3Event, Void> {
@@ -111,35 +110,7 @@ public class CRPGLambda implements RequestHandler<S3Event, Void> {
             local_audio_directory.mkdirs();
         }
     }
-
-    private Map<String, String> copyFromPreviousVersion(GetObjectTaggingResult currentVersion, String bucketName, String objectKey) {
-         Map<String, String> tags = new HashMap<>();
-         String versionId = currentVersion.getVersionId();
-
-        VersionListing list = s3Client.listVersions(bucketName, objectKey);
-        List<S3VersionSummary> summaries = list.getVersionSummaries();
-        for( S3VersionSummary summary : summaries ){
-            if( summary.getVersionId().equals(versionId) ){
-                continue;
-            }
-            GetObjectTaggingRequest getObjectTaggingRequest = new GetObjectTaggingRequest(bucketName, objectKey, summary.getVersionId());
-            GetObjectTaggingResult getObjectTaggingResponse = s3Client.getObjectTagging(getObjectTaggingRequest);
-            if( getObjectTaggingResponse.getTagSet().isEmpty() ){
-                continue;
-            }
-            getObjectTaggingResponse.getTagSet().forEach(tag -> {
-                tags.put(tag.getKey(), tag.getValue());
-            });
-
-            ObjectTagging tagging = new ObjectTagging(getObjectTaggingResponse.getTagSet());
-            SetObjectTaggingRequest setObjectTaggingRequest = new SetObjectTaggingRequest(bucketName, objectKey, versionId, tagging);
-            s3Client.setObjectTagging(setObjectTaggingRequest);
-            break;
-        }
-
-        return tags;
-    }
-
+    
     private byte[] startAzure(String content, Map<String, String> tags) throws InterruptedException, URISyntaxException, IOException {
 
 //        String url = "https://southeastasia.tts.speech.microsoft.com/cognitiveservices/v1";
