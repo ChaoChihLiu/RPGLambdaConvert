@@ -56,7 +56,14 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
             String moment = matcher.group(2);
             String month = matcher.group(1);
             String audio_merge_bucket = System.getenv("audio_merge_bucket");
-            String audio_merge_object_key = AWSUtil.searchS3ObjectKey(audio_merge_bucket, StringUtils.remove(StringUtils.substring(objectKey, 0, StringUtils.lastIndexOf(objectKey, "/")), moment), StringUtils.capitalize(moment)+".audioMerge") ;
+            String audio_merge_object_key = AWSUtil.searchS3ObjectKey(audio_merge_bucket,
+                                                                    StringUtils.remove(
+                                                                            StringUtils.substring(objectKey, 0, StringUtils.lastIndexOf(objectKey, "/")),
+                                                                            moment),
+                                                    StringUtils.capitalize(moment)+".audioMerge") ;
+            if( StringUtils.isEmpty(audio_merge_object_key) ){
+                continue;
+            }
 
             GetObjectTaggingRequest getObjectTaggingRequest = new GetObjectTaggingRequest(audio_merge_bucket, audio_merge_object_key);
             GetObjectTaggingResult getObjectTaggingResponse = s3Client.getObjectTagging(getObjectTaggingRequest);
