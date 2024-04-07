@@ -226,7 +226,7 @@ public class BibleAudioMerger implements RequestHandler<S3Event, Void> {
         }
         String[] temp = StringUtils.split(input, ",");
         for( String str : temp ){
-            String book = StringUtils.trim(StringUtils.split(str, "|")[0]);
+            String book = StringUtils.remove(StringUtils.split(str, "|")[0], " ");
             String chapterWord = TextUtil.returnChapterWord(book);
             String verse = StringUtils.remove(StringUtils.trim(StringUtils.split(str, "|")[1]), chapterWord);
             list.add(book+" "+verse);
