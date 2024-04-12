@@ -94,7 +94,9 @@ public class AWSUtil {
                 }
 //            System.out.println("content: " + content);
 //            System.out.println(" StringUtils.contains(content, contentKeyword): " + StringUtils.contains(content, contentKeyword));
-                if(StringUtils.contains(content, contentKeyword) ){
+                if(StringUtils.contains(content, contentKeyword)
+                        || StringUtils.contains(content, StringUtils.remove(contentKeyword, "章"))
+                        || StringUtils.contains(content, StringUtils.remove(contentKeyword, "篇"))){
                     System.out.println("Found matching object: " + objectKey);
                     return objectKey;
                 }
