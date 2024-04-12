@@ -56,7 +56,7 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
             }
 
             String[] splits = objectKey.split("/");
-            String contentKeyword = splits[1]+"|"+splits[2]+",";
+            String contentKeyword = splits[1]+"|"+splits[2]+returnVerses(splits[1])+",";
 
             String audio_merge_bucket = System.getenv("audio_merge_bucket");
             String audio_merge_object_key = AWSUtil.searchS3ObjectKey(audio_merge_bucket,
