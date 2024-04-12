@@ -15,7 +15,6 @@ import com.amazonaws.services.s3.model.Tag;
 import com.amazonaws.services.s3.model.VersionListing;
 import com.cpbpc.comms.AWSUtil;
 import com.cpbpc.comms.PunctuationTool;
-import com.cpbpc.comms.TextUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.cpbpc.comms.TextUtil.returnChapterWord;
 
 public class AutoMerger implements RequestHandler<S3Event, Void> {
 
@@ -56,7 +57,7 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
             }
 
             String[] splits = objectKey.split("/");
-            String contentKeyword = splits[1]+"|"+splits[2]+returnVerses(splits[1])+",";
+            String contentKeyword = splits[1]+"|"+splits[2]+returnChapterWord(splits[1])+",";
 
             String audio_merge_bucket = System.getenv("audio_merge_bucket");
             String audio_merge_object_key = AWSUtil.searchS3ObjectKey(audio_merge_bucket,
@@ -110,7 +111,7 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
         String[] temp = StringUtils.split(input, ",");
         for( String str : temp ){
             String book = StringUtils.trim(StringUtils.split(str, "|")[0]);
-            String chapterWord = TextUtil.returnChapterWord(book);
+            String chapterWord = returnChapterWord(book);
             String verse = StringUtils.remove(StringUtils.trim(StringUtils.split(str, "|")[1]), chapterWord);
             list.add(book+" "+verse);
         }
@@ -123,7 +124,7 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
         int end = 0;
         String[] result = verse.split(" ");
         String book = result[0];
-        String chapterWord = TextUtil.returnChapterWord(book);
+        String chapterWord = returnChapterWord(book);
         if( PunctuationTool.containHyphen(result[1]) ){
             String hyphen = PunctuationTool.getHyphen(result[1]);
             String[] inputs = StringUtils.split(result[1], hyphen);
