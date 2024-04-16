@@ -103,13 +103,19 @@ public class RPGAudioMerger implements RequestHandler<S3Event, Void> {
         String date = tags.get("publish_date");
         String publishMonth = date.split("-")[0] + "_" + date.split("-")[1];
         String publishDate = date.split("-")[2];
+        String audioKey =  tags.get("audio_key");
+        String fileExtention =  "." + tags.get("audio_merged_format");
+        int count = 0;
+        if( StringUtils.contains(audioKey, "-") ){
+            count = Integer.parseInt(StringUtils.substring(audioKey, StringUtils.indexOf(audioKey, "-")+1, StringUtils.indexOf(audioKey, fileExtention)));
+        }
 
-        File rpg_directory = new File( local_audio_directory.getAbsolutePath()+"/"+tags.get("output_prefix")+publishMonth+"/"+publishDate+"/" );
+        File rpg_directory = new File( local_audio_directory.getAbsolutePath()+"/"+tags.get("output_prefix")+publishMonth+"/"+genDatePath(publishDate, count)+"/" );
         if( !rpg_directory.exists() ){
             rpg_directory.mkdirs();
         }
         AWSUtil.copyS3Objects( tags.get("output_bucket"),
-                tags.get("output_prefix")+publishMonth+"/"+publishDate+"/",
+                tags.get("output_prefix")+publishMonth+"/"+genDatePath(publishDate, count)+"/",
                 tags.get("output_format"),
                 local_audio_directory.getAbsolutePath()+"/");
 
@@ -140,8 +146,19 @@ public class RPGAudioMerger implements RequestHandler<S3Event, Void> {
 
 
 
-        String finalName = tags.get("name_prefix")+StringUtils.remove(date, "-")+"."+tags.get("audio_merged_format");
+//        String finalName = tags.get("name_prefix")+StringUtils.remove(date, "-")+"."+tags.get("audio_merged_format");
+        String finalName = tags.get("audio_key");
         return mergeTo( toBeMerged, local_audio_directory.getAbsolutePath(), finalName );
+    }
+
+    private static String genDatePath(String publishDate, int count) {
+
+        if( count == 0 ){
+            return publishDate;
+        }
+
+        return publishDate+"-" + count;
+
     }
 
 
