@@ -104,10 +104,12 @@ public class RPGAudioMerger implements RequestHandler<S3Event, Void> {
         String publishMonth = date.split("-")[0] + "_" + date.split("-")[1];
         String publishDate = date.split("-")[2];
         String audioKey =  tags.get("audio_key");
+        String paths[] = StringUtils.split(audioKey, "/");
+        String fileName = paths[paths.length-1];
         String fileExtention =  "." + tags.get("audio_merged_format");
         int count = 0;
-        if( StringUtils.contains(audioKey, "-") ){
-            count = Integer.parseInt(StringUtils.substring(audioKey, StringUtils.indexOf(audioKey, "-")+1, StringUtils.indexOf(audioKey, fileExtention)));
+        if( StringUtils.contains(fileName, "-") ){
+            count = Integer.parseInt(StringUtils.substring(fileName, StringUtils.indexOf(fileName, "-")+1, StringUtils.indexOf(fileName, fileExtention)));
         }
 
         File rpg_directory = new File( local_audio_directory.getAbsolutePath()+"/"+tags.get("output_prefix")+publishMonth+"/"+genDatePath(publishDate, count)+"/" );
