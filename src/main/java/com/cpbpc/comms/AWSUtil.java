@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -193,7 +194,7 @@ public class AWSUtil {
                 return;
             }
 
-            PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, localFile);
+            PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, new FileInputStream(localFile), createS3ObjMetadata());
             request.setStorageClass(StorageClass.IntelligentTiering);
             request.setTagging(new ObjectTagging(tags));
 
@@ -204,6 +205,13 @@ public class AWSUtil {
         }
     }
 
+    private static ObjectMetadata createS3ObjMetadata() {
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setCacheControl("no-store, no-cache, must-revalidate");
+        metadata.setHttpExpiresDate(new Date(0));
+        return metadata;
+    }
+
     public static void uploadS3Object(String bucketName, String prefix, String objectKey, File localFile, List<Tag> tags){
 
         try {
@@ -212,7 +220,7 @@ public class AWSUtil {
                 return;
             }
 
-            PutObjectRequest request = new PutObjectRequest(bucketName, prefix+objectKey, localFile);
+            PutObjectRequest request = new PutObjectRequest(bucketName, prefix+objectKey, new FileInputStream(localFile), createS3ObjMetadata());
             request.setStorageClass(StorageClass.IntelligentTiering);
             request.setTagging(new ObjectTagging(tags));
 
@@ -231,7 +239,7 @@ public class AWSUtil {
                 return;
             }
 
-            PutObjectRequest request = new PutObjectRequest(bucketName, prefix+objectKey, localFile);
+            PutObjectRequest request = new PutObjectRequest(bucketName, prefix+objectKey, new FileInputStream(localFile), createS3ObjMetadata());
             request.setStorageClass(StorageClass.IntelligentTiering);
             request.setTagging(new ObjectTagging(tags));
             request.setMetadata(metadata);

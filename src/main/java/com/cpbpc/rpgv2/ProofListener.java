@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -135,8 +136,7 @@ public class ProofListener implements RequestHandler<S3Event, Void> {
         try {
             InputStream inputStream = new StringInputStream(content);
             // Upload the file to S3
-            ObjectMetadata metadata = new ObjectMetadata();
-            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectKey, inputStream, metadata);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectKey, inputStream, createS3ObjMetadata());
 
             putObjectRequest.setStorageClass(StorageClass.IntelligentTiering);
 
@@ -144,6 +144,12 @@ public class ProofListener implements RequestHandler<S3Event, Void> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    private static ObjectMetadata createS3ObjMetadata() {
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setCacheControl("no-store, no-cache, must-revalidate");
+        metadata.setHttpExpiresDate(new Date(0));
+        return metadata;
     }
 
     private String downloadS3Object(String bucketName, String objectKey){
