@@ -211,6 +211,13 @@ public class AWSUtil {
         metadata.setHttpExpiresDate(new Date(0));
         return metadata;
     }
+    private static ObjectMetadata createS3ObjMetadata(String contentType) {
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setCacheControl("no-store, no-cache, must-revalidate");
+        metadata.setContentType(contentType);
+        metadata.setHttpExpiresDate(new Date(0));
+        return metadata;
+    }
 
     public static void uploadS3Object(String bucketName, String prefix, String objectKey, File localFile, List<Tag> tags){
 
@@ -221,6 +228,25 @@ public class AWSUtil {
             }
 
             PutObjectRequest request = new PutObjectRequest(bucketName, prefix+objectKey, new FileInputStream(localFile), createS3ObjMetadata());
+            request.setStorageClass(StorageClass.IntelligentTiering);
+            request.setTagging(new ObjectTagging(tags));
+
+            PutObjectResult result = s3Client.putObject(request);
+            System.out.println("Object uploaded successfully to S3 bucket: " + localFile.getName());
+        } catch (Exception e) {
+            System.out.println(ExceptionUtils.exceptionStackTrace(e));
+        }
+    }
+
+    public static void uploadS3Object(String bucketName, String prefix, String objectKey, File localFile, String contentType, List<Tag> tags){
+
+        try {
+            if( !localFile.exists() || !localFile.isFile() ){
+                System.out.println(localFile.getAbsolutePath() + " not exist or not a file, skip");
+                return;
+            }
+
+            PutObjectRequest request = new PutObjectRequest(bucketName, prefix+objectKey, new FileInputStream(localFile), createS3ObjMetadata(contentType));
             request.setStorageClass(StorageClass.IntelligentTiering);
             request.setTagging(new ObjectTagging(tags));
 

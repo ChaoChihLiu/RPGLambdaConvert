@@ -75,7 +75,12 @@ public class BibleAudioMerger implements RequestHandler<S3Event, Void> {
 //
 //                    ObjectMetadata metadata = new ObjectMetadata();
 //                    metadata.addUserMetadata("needPL", "true");
-                    AWSUtil.uploadS3Object(tags.get("audio_merged_bucket"), tags.get("audio_merged_prefix"), audioFileName, audio, tagList);
+                    AWSUtil.uploadS3Object(tags.get("audio_merged_bucket"),
+                            tags.get("audio_merged_prefix"),
+                            audioFileName,
+                            audio,
+                            "audio/mpeg",
+                            tagList);
                 }//end of for loop
 
 //                s3Client.deleteObject(bucketName, objectKey);

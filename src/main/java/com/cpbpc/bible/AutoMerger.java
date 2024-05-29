@@ -96,7 +96,12 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
             for (String input : list) {
                 File audio = mergeMp3(input, tags);
                 List<Tag> tagList = new ArrayList<>();
-                AWSUtil.uploadS3Object(tags.get("audio_merged_bucket"), tags.get("audio_merged_prefix"), audioFileName, audio, tagList);
+                AWSUtil.uploadS3Object(tags.get("audio_merged_bucket"),
+                        tags.get("audio_merged_prefix"),
+                        audioFileName,
+                        audio,
+                        "audio/mpeg",
+                        tagList);
             }//end of for loop
         }
     }catch(IOException e){

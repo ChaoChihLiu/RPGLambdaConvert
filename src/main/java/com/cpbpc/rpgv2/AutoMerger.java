@@ -79,7 +79,12 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
             String date = tags.get("publish_date");
             String publisMonth = date.split("-")[0]+"_"+date.split("-")[1];
             String publisDate = date.split("-")[2];
-            AWSUtil.uploadS3Object(tags.get("audio_merged_bucket"), tags.get("audio_merged_prefix")+publisMonth+"/", audio.getName(), audio, tagList);
+            AWSUtil.uploadS3Object(tags.get("audio_merged_bucket"),
+                    tags.get("audio_merged_prefix")+publisMonth+"/",
+                    audio.getName(),
+                    audio,
+                    "audio/mpeg",
+                    tagList);
         }
 
         return null;

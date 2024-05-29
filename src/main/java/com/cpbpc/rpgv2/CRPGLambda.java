@@ -80,6 +80,7 @@ public class CRPGLambda implements RequestHandler<S3Event, Void> {
                         tags.get("output_prefix"),
                         tags.get("audio_key").replace(tags.get("output_prefix"), ""),
                         localFile,
+                        "audio/mpeg",
                         destTags);
 
                 System.out.println("Azure done!");
