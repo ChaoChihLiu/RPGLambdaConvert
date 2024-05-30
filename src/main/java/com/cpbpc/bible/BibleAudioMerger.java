@@ -59,7 +59,7 @@ public class BibleAudioMerger implements RequestHandler<S3Event, Void> {
                     continue;
                 }
 
-                String audioFileName = StringUtils.split(objectKey.split("/")[1], ".")[0]+"."+tags.get("audio_merged_format");
+                String audioFileName = StringUtils.split(objectKey.split("/")[2], ".")[0]+"."+tags.get("audio_merged_format");
                 System.out.println("audio file name " + audioFileName);
 
                 S3Object s3Object = s3Client.getObject(bucketName, objectKey);
