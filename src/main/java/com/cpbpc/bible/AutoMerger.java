@@ -85,7 +85,7 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
                 continue;
             }
 
-            String audioFileName = StringUtils.split(audio_merge_object_key.split("/")[1], ".")[0] + "." + tags.get("audio_merged_format");
+            String audioFileName = StringUtils.split(audio_merge_object_key.split("/")[2], ".")[0] + "." + tags.get("audio_merged_format");
             System.out.println("audio file name " + audioFileName);
 
             S3Object s3Object = s3Client.getObject(audio_merge_bucket, audio_merge_object_key);
