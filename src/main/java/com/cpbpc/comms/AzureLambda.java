@@ -1,4 +1,4 @@
-package com.cpbpc.rpgv2;
+package com.cpbpc.comms;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -15,7 +15,6 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.StorageClass;
 import com.amazonaws.services.s3.model.Tag;
 import com.amazonaws.util.IOUtils;
-import com.cpbpc.comms.AWSUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +34,7 @@ import java.util.Map;
 import static com.cpbpc.comms.AWSUtil.copyFromPreviousVersion;
 
 
-public class CRPGLambda implements RequestHandler<S3Event, Void> {
+public class AzureLambda implements RequestHandler<S3Event, Void> {
     
     private static final AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
 
