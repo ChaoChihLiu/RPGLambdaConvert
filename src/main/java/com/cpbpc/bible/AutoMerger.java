@@ -113,15 +113,15 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
 
     private String convertChapter(String input) {
         String result = input;
-        if( StringUtils.startsWithIgnoreCase(input, "first") ){
-            result = StringUtils.replace(input, "First", "First ");
-        }
-        if( StringUtils.startsWithIgnoreCase(input, "second") ){
-            result = StringUtils.replace(input, "Second", "Second ");
-        }
-        if( StringUtils.startsWithIgnoreCase(input, "third") ){
-            result = StringUtils.replace(input, "Third", "Third ");
-        }
+//        if( StringUtils.startsWithIgnoreCase(input, "first") ){
+//            result = StringUtils.replace(input, "First", "First ");
+//        }
+//        if( StringUtils.startsWithIgnoreCase(input, "second") ){
+//            result = StringUtils.replace(input, "Second", "Second ");
+//        }
+//        if( StringUtils.startsWithIgnoreCase(input, "third") ){
+//            result = StringUtils.replace(input, "Third", "Third ");
+//        }
 
         return result;
     }
