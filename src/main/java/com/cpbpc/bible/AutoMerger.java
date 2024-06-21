@@ -57,9 +57,9 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
             }
 
             String[] splits = objectKey.split("/");
-            String contentKeyword = splits[1]+"|"+splits[2]+",";
+            String contentKeyword = convertChapter(splits[1])+"|"+splits[2]+",";
             if( StringUtils.startsWithIgnoreCase(objectKey, "cuvs") ){
-                contentKeyword = splits[1]+"|"+splits[2]+returnChapterWord(splits[1])+",";
+                contentKeyword = convertChapter(splits[1])+"|"+splits[2]+returnChapterWord(splits[1])+",";
             }
 
             String audio_merge_bucket = System.getenv("audio_merge_bucket");
@@ -109,6 +109,21 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
     }
 
         return null;
+    }
+
+    private String convertChapter(String input) {
+        String result = input;
+        if( StringUtils.startsWithIgnoreCase(input, "first") ){
+            result = StringUtils.replace(input, "First", "First ");
+        }
+        if( StringUtils.startsWithIgnoreCase(input, "second") ){
+            result = StringUtils.replace(input, "Second", "Second ");
+        }
+        if( StringUtils.startsWithIgnoreCase(input, "third") ){
+            result = StringUtils.replace(input, "Third", "Third ");
+        }
+
+        return result;
     }
 
     private List<String> returnVerses(String input){
