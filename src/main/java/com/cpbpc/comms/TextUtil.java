@@ -15,7 +15,8 @@ public class TextUtil {
                     || StringUtils.equals(book, "詩")
                     || StringUtils.equals(book, ZhConverterUtil.toSimple("詩篇"))
                     || StringUtils.equals(book, ZhConverterUtil.toSimple("詩"))){
-                return "篇";
+//                return "篇";
+                return "";
             }
             return "章";
         }
