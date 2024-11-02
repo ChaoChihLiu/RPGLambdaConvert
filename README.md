@@ -18,6 +18,6 @@ Naming convention is a bit confused...because all of these functions are added p
 * com.cpbpc.remembrance.AudioMerger: manually merge daily remembrance
 * com.cpbpc.bible.BibleAudioMerger: manually merge KJV and CUVS
 <br/>
-* com.cpbpc.rpgv2.AutoMerger: Automatically merge clips to final audio, including RPG 
-* com.cpbpc.bible.AutoMerger: Automatically merge clips to final audio, including KJV and CUVS 
-* com.cpbpc.remembrance.AutoMerger: Automatically merge clips to final audio, including Daily Remembrance
+* com.cpbpc.rpgv2.AutoMerger: Automatically merge clips to final audio, including RPG<br/> 
+* com.cpbpc.bible.AutoMerger: Automatically merge clips to final audio, including KJV and CUVS <br/>
+* com.cpbpc.remembrance.AutoMerger: Automatically merge clips to final audio, including Daily Remembrance  <br/>
