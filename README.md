@@ -20,5 +20,5 @@ Naming convention is a bit confused...because all of these functions are added p
 
 
 * com.cpbpc.rpgv2.AutoMerger: Automatically merge clips to final audio, including RPG
-* * com.cpbpc.bible.AutoMerger: Automatically merge clips to final audio, including KJV and CUVS
-* * com.cpbpc.remembrance.AutoMerger: Automatically merge clips to final audio, including Daily Remembrance
+* com.cpbpc.bible.AutoMerger: Automatically merge clips to final audio, including KJV and CUVS
+* com.cpbpc.remembrance.AutoMerger: Automatically merge clips to final audio, including Daily Remembrance
