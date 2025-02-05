@@ -102,6 +102,7 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
                         audio,
                         "audio/mpeg",
                         tagList);
+                audio.delete();
             }//end of for loop
         }
     }catch(IOException e){
@@ -212,6 +213,8 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
         File dir = new File(filePath);
         File result = new File(filePath + outputName);
         System.out.println("merge to " + filePath+outputName);
+        FileOutputStream sistream = null;
+        FileInputStream fistream = null;
         try{
             if( !dir.exists() ){
                 dir.mkdirs();
@@ -220,9 +223,9 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
                 result.createNewFile();
             }
 
-            FileOutputStream sistream = new FileOutputStream(result);
+            sistream = new FileOutputStream(result);
             for( File file : inputs ){
-                FileInputStream fistream = new FileInputStream(file);
+                fistream = new FileInputStream(file);
                 int temp;
                 int size = 0;
 
@@ -236,10 +239,21 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
                     temp = fistream.read();
                 };
                 fistream.close();
+                file.delete();
             }
 
         } catch (IOException e){
             e.printStackTrace();
+        } finally {
+            try{
+                if( sistream != null ){
+                    sistream.close();
+                }
+                if( fistream != null ){
+                    fistream.close();
+                }
+            } catch (Exception e){
+            }
         }
 
         return result;

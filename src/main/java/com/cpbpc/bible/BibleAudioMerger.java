@@ -34,6 +34,7 @@ import java.util.Map;
 public class BibleAudioMerger implements RequestHandler<S3Event, Void> {
 
     private static final AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
+    private static final String local_workspace = "/tmp/audioMerge/";
     
     @Override
     public Void handleRequest(S3Event s3event, Context context) {
@@ -81,6 +82,7 @@ public class BibleAudioMerger implements RequestHandler<S3Event, Void> {
                             audio,
                             "audio/mpeg",
                             tagList);
+                    audio.delete();
                 }//end of for loop
 
 //                s3Client.deleteObject(bucketName, objectKey);
@@ -136,7 +138,7 @@ public class BibleAudioMerger implements RequestHandler<S3Event, Void> {
             start = end = Integer.valueOf(StringUtils.replace(StringUtils.trim(result[1]), chapterWord, ""));
         }
 
-        File local_audio_directory = new File("/tmp/audioMerge/"+verse);
+        File local_audio_directory = new File(local_workspace+verse);
         if( !local_audio_directory.exists() ){
             local_audio_directory.mkdirs();
         }
@@ -191,6 +193,8 @@ public class BibleAudioMerger implements RequestHandler<S3Event, Void> {
         File dir = new File(filePath);
         File result = new File(filePath + outputName);
         System.out.println("merge to " + filePath+outputName);
+        FileOutputStream sistream = null;
+        FileInputStream fistream = null;
         try{
             if( !dir.exists() ){
                 dir.mkdirs();
@@ -199,9 +203,9 @@ public class BibleAudioMerger implements RequestHandler<S3Event, Void> {
                 result.createNewFile();
             }
 
-            FileOutputStream sistream = new FileOutputStream(result);
+            sistream = new FileOutputStream(result);
             for( File file : inputs ){
-                FileInputStream fistream = new FileInputStream(file);
+                fistream = new FileInputStream(file);
                 int temp;
                 int size = 0;
 
@@ -215,10 +219,21 @@ public class BibleAudioMerger implements RequestHandler<S3Event, Void> {
                     temp = fistream.read();
                 };
                 fistream.close();
+                file.delete();
             }
 
         } catch (IOException e){
             e.printStackTrace();
+        } finally {
+            try{
+                if( sistream != null ){
+                    sistream.close();
+                }
+                if( fistream != null ){
+                    fistream.close();
+                }
+            } catch (Exception e){
+            }
         }
 
         return result;
