@@ -37,6 +37,7 @@ import static com.cpbpc.comms.TextUtil.returnChapterWord;
 public class AutoMerger implements RequestHandler<S3Event, Void> {
 
     private static final AmazonS3 s3Client = AmazonS3ClientBuilder.standard().build();
+    private static final String local_workspace = "/tmp/audioMerge/";
 
     @Override
     public Void handleRequest(S3Event s3event, Context context) {
@@ -158,7 +159,7 @@ public class AutoMerger implements RequestHandler<S3Event, Void> {
             start = end = Integer.valueOf(StringUtils.replace(StringUtils.trim(result[1]), chapterWord, ""));
         }
 
-        File local_audio_directory = new File("/tmp/audioMerge/"+verse);
+        File local_audio_directory = new File(local_workspace+verse);
         if( !local_audio_directory.exists() ){
             local_audio_directory.mkdirs();
         }
